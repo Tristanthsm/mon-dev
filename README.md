@@ -1,69 +1,49 @@
 # 🚀 Mon Dev Cockpit
 
 Mon cockpit de développement personnel avec terminal intégré, IA, et intégrations.
+Refondu avec une architecture unifiée et un design moderne Glassmorphism.
 
-## ✨ Fonctionnalités actuelles (Phase 1)
-- ✅ Terminal web fonctionnel (xterm.js + WebSocket)
-- ✅ Dashboard avec statistiques
-- ✅ Actions rapides
-- ✅ Architecture backend/frontend séparée
-- ✅ Sécurité des commandes terminal
+## ✨ Fonctionnalités
+- **Architecture Unifiée** : Backend et Frontend dans un seul projet.
+- **Design Moderne** : Interface "Glassmorphism" avec animations fluides (Framer Motion).
+- **Terminal Web** : Accès direct au shell via WebSocket (xterm.js).
+- **Dashboard** : Statistiques et actions rapides.
 
 ## 🛠️ Stack Technique
+- **Runtime**: Node.js 20+
+- **Frontend**: Next.js 14, Tailwind CSS, Framer Motion
+- **Backend**: Express.js, WebSocket (ws), node-pty
+- **Langage**: TypeScript strict
 
-### Backend
-- Node.js + Express + TypeScript
-- WebSocket (ws) + Terminal (node-pty)
-- Winston pour les logs
+## 🚀 Démarrage Rapide
 
-### Frontend
-- Next.js 14 (App Router)
-- React + TypeScript
-- Tailwind CSS + shadcn/ui
-- xterm.js pour le terminal
+```bash
+# Installation
+npm install
 
-## 🚀 Installation & Lancement
+# Lancement (Backend + Frontend)
+npm run dev
+```
 
-### Prérequis
-- Node.js 20+
-- npm ou yarn
-
-### Setup
-
-1. **Backend**
-   ```bash
-   cd backend
-   npm install
-   cp .env.example .env
-   npm run dev
-   ```
-
-2. **Frontend**
-   ```bash
-   cd frontend
-   npm install
-   cp .env.example .env.local
-   npm run dev
-   ```
-
-3. **Ouvrir**
-   http://localhost:3000
+Ouvrir [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Structure
 ```
 mon-dev/
-├── backend/     # Serveur Node.js + WebSocket terminal
-├── frontend/    # Application Next.js
-└── README.md
+├── app/         # Pages Next.js (Dashboard, Terminal)
+├── components/  # Composants React (UI, Layout)
+├── src/         # Code Backend (Server, WebSocket)
+├── public/      # Assets statiques
+└── package.json # Dépendances unifiées
 ```
 
-## 🎯 Roadmap
-- [x] Phase 1: Terminal + Dashboard
-- [ ] Phase 2: Intégration IA Gemini
-- [ ] Phase 3: GitHub API
-- [ ] Phase 4: Supabase
-- [ ] Phase 5: Ressources & Notes
-- [ ] Phase 6: Automatisations n8n
+## 🎨 Design System
+- **Thème** : Dark Slate (`#0F172A`)
+- **Accents** : Cyan, Blue, Emerald gradients
+- **Effets** : Backdrop blur, Glass cards, Hover glows
 
-## 📝 Licence
-Projet personnel - Pas de licence pour l'instant
+## 🎯 Roadmap
+- [x] Phase 1: Refactoring Structurel
+- [x] Phase 2: Redesign UI (Glassmorphism)
+- [ ] Phase 3: Intégration IA Gemini
+- [ ] Phase 4: GitHub API

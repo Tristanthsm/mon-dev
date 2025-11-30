@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-white/10;
+    }
+
+    body {
+        @apply bg-[#0F172A] text-slate-200 antialiased selection:bg-cyan-500/30 min-h-screen relative overflow-x-hidden;
+    }
+
+    /* Mesh Gradient Background */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background:
+            radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.15), transparent 25%),
+            radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15), transparent 25%);
+        z-index: -1;
+        pointer-events: none;
+    }
+}
+
+.glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl;
+}
+
+.glass-panel {
+    @apply bg-[#0F172A]/80 backdrop-blur-xl border-b border-white/5;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
+}
+
+/* xterm.js customization */
+.xterm-viewport {
+    overflow-y: auto;
+}
+
+.xterm-screen {
+    padding: 1rem;
+}

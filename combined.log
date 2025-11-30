@@ -1,0 +1,12 @@
+{"level":"info","message":"Server running on port 3001","timestamp":"2025-11-30T18:31:09.809Z"}
+{"level":"info","message":"WebSocket server ready at ws://localhost:3001/terminal","timestamp":"2025-11-30T18:31:09.811Z"}
+{"level":"info","message":"Server running on port 3001","timestamp":"2025-11-30T18:34:30.161Z"}
+{"level":"info","message":"WebSocket server ready at ws://localhost:3001/terminal","timestamp":"2025-11-30T18:34:30.162Z"}
+{"level":"info","message":"Server running on port 3001","timestamp":"2025-11-30T18:36:33.202Z"}
+{"level":"info","message":"WebSocket server ready at ws://localhost:3001/terminal","timestamp":"2025-11-30T18:36:33.203Z"}
+{"level":"info","message":"Server running on port 3001","timestamp":"2025-11-30T19:09:12.253Z"}
+{"level":"info","message":"WebSocket server ready at ws://localhost:3001/terminal","timestamp":"2025-11-30T19:09:12.254Z"}
+{"level":"info","message":"New terminal connection established","timestamp":"2025-11-30T20:24:48.518Z"}
+{"level":"info","message":"Terminal connection closed","timestamp":"2025-11-30T20:24:48.526Z"}
+{"level":"info","message":"New terminal connection established","timestamp":"2025-11-30T20:24:48.527Z"}
+{"level":"info","message":"Terminal connection closed","timestamp":"2025-11-30T20:24:54.369Z"}
