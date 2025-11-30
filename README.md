@@ -1,19 +1,19 @@
 # 🚀 Mon Dev Cockpit
 
-Mon cockpit de développement personnel avec terminal intégré, IA, et intégrations.
-Refondu avec une architecture unifiée et un design moderne Glassmorphism.
+Cockpit de développement moderne avec Next.js 14 et design Glassmorphism.
 
 ## ✨ Fonctionnalités
-- **Architecture Unifiée** : Backend et Frontend dans un seul projet.
-- **Design Moderne** : Interface "Glassmorphism" avec animations fluides (Framer Motion).
-- **Terminal Web** : Accès direct au shell via WebSocket (xterm.js).
-- **Dashboard** : Statistiques et actions rapides.
+- **Design Moderne** : Interface "Glassmorphism" avec animations fluides (Framer Motion)
+- **Dashboard** : Statistiques et actions rapides
+- **Next.js 14** : App Router, Server Components
+- **Tailwind CSS** : Design system personnalisé
+- **Supabase Ready** : Prêt pour l'intégration backend
 
 ## 🛠️ Stack Technique
-- **Runtime**: Node.js 20+
-- **Frontend**: Next.js 14, Tailwind CSS, Framer Motion
-- **Backend**: Express.js, WebSocket (ws), node-pty
-- **Langage**: TypeScript strict
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **Styling**: Tailwind CSS, Framer Motion
+- **Icons**: Lucide React
+- **Backend**: Supabase (à configurer)
 
 ## 🚀 Démarrage Rapide
 
@@ -21,7 +21,7 @@ Refondu avec une architecture unifiée et un design moderne Glassmorphism.
 # Installation
 npm install
 
-# Lancement (Backend + Frontend)
+# Développement
 npm run dev
 ```
 
@@ -30,20 +30,24 @@ Ouvrir [http://localhost:3000](http://localhost:3000)
 ## 📁 Structure
 ```
 mon-dev/
-├── app/         # Pages Next.js (Dashboard, Terminal)
-├── components/  # Composants React (UI, Layout)
-├── src/         # Code Backend (Server, WebSocket)
-├── public/      # Assets statiques
-└── package.json # Dépendances unifiées
+├── app/              # Pages Next.js
+├── components/       # Composants React
+│   ├── dashboard/   # Cartes, Actions
+│   ├── layout/      # Navigation
+│   └── ui/          # Composants UI réutilisables
+├── lib/             # Utilitaires
+└── public/          # Assets statiques
 ```
 
 ## 🎨 Design System
 - **Thème** : Dark Slate (`#0F172A`)
-- **Accents** : Cyan, Blue, Emerald gradients
+- **Accents** : Cyan, Violet, Fuchsia gradients
 - **Effets** : Backdrop blur, Glass cards, Hover glows
+- **Animations** : Framer Motion (fade, scale, stagger)
 
 ## 🎯 Roadmap
-- [x] Phase 1: Refactoring Structurel
-- [x] Phase 2: Redesign UI (Glassmorphism)
-- [ ] Phase 3: Intégration IA Gemini
-- [ ] Phase 4: GitHub API
+- [x] Design Glassmorphism
+- [x] Dashboard avec stats
+- [ ] Intégration Supabase
+- [ ] Authentification
+- [ ] Actions Git (Phase 3)

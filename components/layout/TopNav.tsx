@@ -13,7 +13,6 @@ const TopNav = () => {
 
     const navItems = [
         { href: '/', label: 'Dashboard', icon: null },
-        { href: '/terminal', label: 'Terminal', icon: null },
         { href: '#', label: 'GitHub', icon: Github },
         { href: '#', label: 'Supabase', icon: Database },
     ];
