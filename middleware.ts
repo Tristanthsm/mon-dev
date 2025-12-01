@@ -31,17 +31,7 @@ export async function middleware(request: NextRequest) {
 
     // Si l'utilisateur est connecté et essaie d'accéder à login/signup, le rediriger vers le dashboard
     if (data.user && (pathname === '/login' || pathname === '/signup')) {
-        return NextResponse.redirect(new URL('/', request.url))
-    }
-
-    // Si l'utilisateur n'est pas connecté et essaie d'accéder à une route protégée
-    if (!data.user && pathname !== '/login' && pathname !== '/signup' && pathname !== '/') {
-        return NextResponse.redirect(new URL('/login', request.url))
-    }
-
-    // Si l'utilisateur n'est pas connecté et essaie d'accéder à la racine, le rediriger vers login
-    if (!data.user && pathname === '/') {
-        return NextResponse.redirect(new URL('/login', request.url))
+        return NextResponse.redirect(new URL('/dashboard', request.url))
     }
 
     return response
