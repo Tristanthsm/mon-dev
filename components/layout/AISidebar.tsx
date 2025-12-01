@@ -18,6 +18,7 @@ const QUICK_SUGGESTIONS = [
 
 export default function AISidebar() {
     const [isOpen, setIsOpen] = useState(true);
+    const [selectedProvider, setSelectedProvider] = useState<'openrouter' | 'gemini'>('openrouter');
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
@@ -70,18 +71,21 @@ export default function AISidebar() {
                 parts: [{ text: msg.content }],
             }));
 
-            const res = await fetch('/api/openrouter/chat', {
+            // Use selected provider
+            const endpoint = selectedProvider === 'openrouter' ? '/api/openrouter/chat' : '/api/gemini/chat';
+
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: userMessage, history }),
             });
 
-            if (!res.ok || !res.body) {
-                const text = await res.text();
-                throw new Error(text || 'OpenRouter error');
+            if (!response.ok || !response.body) {
+                const text = await response.text();
+                throw new Error(text || `${selectedProvider} error`);
             }
 
-            const reader = res.body.getReader();
+            const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let done = false;
 
@@ -98,7 +102,7 @@ export default function AISidebar() {
             setMessages(prev => [...prev, {
                 id: (Date.now() + 2).toString(),
                 role: 'assistant',
-                content: 'Désolé, une erreur s\'est produite. Veuillez réessayer.',
+                content: `Erreur avec ${selectedProvider}: ${error instanceof Error ? error.message : 'Erreur inconnue'}. Veuillez vérifier votre clé API ou réessayer.`,
                 timestamp: new Date(),
             }]);
         } finally {
@@ -139,6 +143,33 @@ export default function AISidebar() {
                 >
                     <ChevronLeft size={20} className="text-slate-400" />
                 </button>
+            </div>
+
+            {/* Model Selector */}
+            <div className="p-4 border-b border-white/10 space-y-2">
+                <p className="text-xs text-slate-400 font-medium">Choisir le modèle :</p>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setSelectedProvider('openrouter')}
+                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                            selectedProvider === 'openrouter'
+                                ? 'bg-gradient-to-r from-cyan-500 to-violet-500 text-white'
+                                : 'bg-white/10 border border-white/20 text-slate-300 hover:bg-white/20'
+                        }`}
+                    >
+                        🚀 OpenRouter
+                    </button>
+                    <button
+                        onClick={() => setSelectedProvider('gemini')}
+                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                            selectedProvider === 'gemini'
+                                ? 'bg-gradient-to-r from-cyan-500 to-violet-500 text-white'
+                                : 'bg-white/10 border border-white/20 text-slate-300 hover:bg-white/20'
+                        }`}
+                    >
+                        ✨ Gemini
+                    </button>
+                </div>
             </div>
 
             {/* Messages Area */}
