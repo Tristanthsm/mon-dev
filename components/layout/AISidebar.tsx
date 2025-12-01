@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Send, Loader, X } from 'lucide-react';
-import { getGeminiResponse } from '@/lib/gemini/client';
 
 interface Message {
     id: string;
@@ -55,32 +54,53 @@ export default function AISidebar() {
         setInput('');
         setIsLoading(true);
 
+        // Add a placeholder assistant message which we'll update as chunks arrive
+        const assistantId = (Date.now() + 1).toString();
+        const placeholder: Message = {
+            id: assistantId,
+            role: 'assistant',
+            content: '',
+            timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, placeholder]);
+
         try {
-            // Convertir l'historique au format Gemini
             const history = messages.map(msg => ({
-                role: msg.role === 'user' ? 'user' : 'model',
+                role: msg.role === 'user' ? 'user' : 'assistant',
                 parts: [{ text: msg.content }],
             }));
 
-            const response = await getGeminiResponse(userMessage, history);
+            const res = await fetch('/api/openrouter/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMessage, history }),
+            });
 
-            const newAssistantMessage: Message = {
-                id: (Date.now() + 1).toString(),
-                role: 'assistant',
-                content: response,
-                timestamp: new Date(),
-            };
+            if (!res.ok || !res.body) {
+                const text = await res.text();
+                throw new Error(text || 'OpenRouter error');
+            }
 
-            setMessages(prev => [...prev, newAssistantMessage]);
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let done = false;
+
+            while (!done) {
+                const { value, done: doneReading } = await reader.read();
+                done = !!doneReading;
+                if (value) {
+                    const chunk = decoder.decode(value);
+                    setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: m.content + chunk } : m));
+                }
+            }
         } catch (error) {
             console.error('Error getting response:', error);
-            const errorMessage: Message = {
+            setMessages(prev => [...prev, {
                 id: (Date.now() + 2).toString(),
                 role: 'assistant',
                 content: 'Désolé, une erreur s\'est produite. Veuillez réessayer.',
                 timestamp: new Date(),
-            };
-            setMessages(prev => [...prev, errorMessage]);
+            }]);
         } finally {
             setIsLoading(false);
         }
