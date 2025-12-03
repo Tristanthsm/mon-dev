@@ -13,9 +13,15 @@ export async function POST(req: NextRequest) {
     // Build clean history for Gemini (user/model alternating, starting with user)
     let cleanHistory: any[] = [];
     if (Array.isArray(history)) {
+      let foundFirstUser = false;
       for (const h of history) {
+        const role = h.role === 'user' ? 'user' : 'model';
+        if (!foundFirstUser && role === 'model') {
+          continue; // Skip initial assistant messages
+        }
+        foundFirstUser = true;
         cleanHistory.push({
-          role: h.role === 'user' ? 'user' : 'model',
+          role: role,
           parts: [{ text: h.parts?.[0]?.text || h.content || '' }],
         });
       }

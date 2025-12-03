@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     console.log('Calling OpenRouter with messages:', messages);
 
-    const openrouterRes = await fetch('https://api.openrouter.ai/v1/chat/completions', {
+    const openrouterRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
