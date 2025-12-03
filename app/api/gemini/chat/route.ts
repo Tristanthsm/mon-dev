@@ -1,14 +1,14 @@
 import type { NextRequest } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { message, history } = body;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     // Build clean history for Gemini (user/model alternating, starting with user)
     let cleanHistory: any[] = [];
