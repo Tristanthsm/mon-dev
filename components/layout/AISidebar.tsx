@@ -18,7 +18,7 @@ const QUICK_SUGGESTIONS = [
 
 export default function AISidebar() {
     const [isOpen, setIsOpen] = useState(true);
-    const [selectedProvider, setSelectedProvider] = useState<'openrouter' | 'gemini'>('openrouter');
+    const [selectedProvider, setSelectedProvider] = useState<'openrouter'>('openrouter');
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
@@ -71,8 +71,8 @@ export default function AISidebar() {
                 parts: [{ text: msg.content }],
             }));
 
-            // Use selected provider
-            const endpoint = selectedProvider === 'openrouter' ? '/api/openrouter/chat' : '/api/gemini/chat';
+            // Use OpenRouter endpoint only
+            const endpoint = '/api/openrouter/chat';
 
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -82,7 +82,7 @@ export default function AISidebar() {
 
             if (!response.ok || !response.body) {
                 const text = await response.text();
-                throw new Error(text || `${selectedProvider} error`);
+                throw new Error(text || `OpenRouter error`);
             }
 
             const reader = response.body.getReader();
@@ -97,15 +97,15 @@ export default function AISidebar() {
                     setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: m.content + chunk } : m));
                 }
             }
-        } catch (error) {
-            console.error('Error getting response:', error);
-            setMessages(prev => [...prev, {
-                id: (Date.now() + 2).toString(),
-                role: 'assistant',
-                content: `Erreur avec ${selectedProvider}: ${error instanceof Error ? error.message : 'Erreur inconnue'}. Veuillez vérifier votre clé API ou réessayer.`,
-                timestamp: new Date(),
-            }]);
-        } finally {
+            } catch (error) {
+                console.error('Error getting response:', error);
+                setMessages(prev => [...prev, {
+                    id: (Date.now() + 2).toString(),
+                    role: 'assistant',
+                    content: `Erreur avec OpenRouter: ${error instanceof Error ? error.message : 'Erreur inconnue'}. Veuillez vérifier votre clé API ou réessayer.`,
+                    timestamp: new Date(),
+                }]);
+            } finally {
             setIsLoading(false);
         }
     };
@@ -145,29 +145,15 @@ export default function AISidebar() {
                 </button>
             </div>
 
-            {/* Model Selector */}
+            {/* Model Info */}
             <div className="p-4 border-b border-white/10 space-y-2">
-                <p className="text-xs text-slate-400 font-medium">Choisir le modèle :</p>
-                <div className="flex gap-2">
+                <p className="text-xs text-slate-400 font-medium">Modèle : OpenRouter (par défaut)</p>
+                <div className="flex gap-2 mt-2">
                     <button
-                        onClick={() => setSelectedProvider('openrouter')}
-                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                            selectedProvider === 'openrouter'
-                                ? 'bg-gradient-to-r from-cyan-500 to-violet-500 text-white'
-                                : 'bg-white/10 border border-white/20 text-slate-300 hover:bg-white/20'
-                        }`}
+                        onClick={() => window.open('/ai', '_blank')}
+                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all bg-white/10 border border-white/20 text-slate-300 hover:bg-white/20`}
                     >
-                        🚀 OpenRouter
-                    </button>
-                    <button
-                        onClick={() => setSelectedProvider('gemini')}
-                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                            selectedProvider === 'gemini'
-                                ? 'bg-gradient-to-r from-cyan-500 to-violet-500 text-white'
-                                : 'bg-white/10 border border-white/20 text-slate-300 hover:bg-white/20'
-                        }`}
-                    >
-                        ✨ Gemini
+                        Ouvrir dans une fenêtre
                     </button>
                 </div>
             </div>
