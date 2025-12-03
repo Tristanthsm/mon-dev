@@ -8,10 +8,10 @@ export async function POST(req: NextRequest) {
     // Build OpenRouter messages format
     const messages = [
       ...(Array.isArray(history)
-        ? history.map((h: any) => ({ 
-            role: h.role === 'user' ? 'user' : 'assistant', 
-            content: h.parts?.map((p: any) => p.text).join('') || h.content || '' 
-          }))
+        ? history.map((h: any) => ({
+          role: h.role === 'user' ? 'user' : 'assistant',
+          content: h.parts?.map((p: any) => p.text).join('') || h.content || ''
+        }))
         : []),
       { role: 'user', content: message },
     ];
@@ -43,8 +43,53 @@ export async function POST(req: NextRequest) {
       return new Response('No response body from OpenRouter', { status: 500 });
     }
 
-    // Stream the upstream response body directly to the client
-    return new Response(openrouterRes.body, {
+    // Parse SSE stream and extract text content
+    const reader = openrouterRes.body.getReader();
+    const decoder = new TextDecoder();
+    const encoder = new TextEncoder();
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        let buffer = '';
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed || trimmed === 'data: [DONE]') continue;
+
+              if (trimmed.startsWith('data: ')) {
+                try {
+                  const jsonStr = trimmed.slice(6);
+                  const data = JSON.parse(jsonStr);
+                  const content = data.choices?.[0]?.delta?.content;
+
+                  if (content) {
+                    controller.enqueue(encoder.encode(content));
+                  }
+                } catch (e) {
+                  console.error('Error parsing SSE chunk:', e);
+                }
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Stream reading error:', err);
+          controller.error(err);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
       status: 200,
       headers: {
         'Content-Type': 'text/event-stream',
