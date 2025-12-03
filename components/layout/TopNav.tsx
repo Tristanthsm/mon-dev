@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Terminal, Github, Database, User, Menu } from 'lucide-react';
+import { Terminal, Github, Database, User, Menu, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ const TopNav = () => {
 
     const navItems = [
         { href: '/', label: 'Dashboard', icon: null },
+        { href: '/ai', label: 'Assistant IA', icon: MessageCircle },
         { href: '#', label: 'GitHub', icon: Github },
         { href: '#', label: 'Supabase', icon: Database },
     ];

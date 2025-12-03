@@ -17,7 +17,7 @@ const QUICK_SUGGESTIONS = [
 ];
 
 export default function AISidebar() {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
     const [selectedProvider, setSelectedProvider] = useState<'openrouter'>('openrouter');
     const [messages, setMessages] = useState<Message[]>([
         {
