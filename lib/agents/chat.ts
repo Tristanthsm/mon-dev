@@ -11,7 +11,7 @@ import { ChatRequest, ChatResponse } from './types';
  */
 function analyzeRequestNeedsAdvancedAI(message: string): boolean {
   const lowerMsg = message.toLowerCase();
-  
+
   // Keywords that might benefit from uncensored model
   const advancedKeywords = [
     'controversial',
@@ -28,7 +28,7 @@ function analyzeRequestNeedsAdvancedAI(message: string): boolean {
     'explicit content',
     'nsfw',
   ];
-  
+
   // Check if message contains any advanced keywords
   return advancedKeywords.some(keyword => lowerMsg.includes(keyword));
 }
@@ -38,7 +38,7 @@ function analyzeRequestNeedsAdvancedAI(message: string): boolean {
  */
 async function callGPT4(message: string): Promise<ChatResponse> {
   const apiKey = process.env.OPENROUTER_API_KEY;
-  
+
   if (!apiKey) {
     throw new Error('OPENROUTER_API_KEY not configured');
   }
@@ -88,6 +88,7 @@ async function callGPT4(message: string): Promise<ChatResponse> {
   }
 }
 
+export const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 /**
  * Call OpenRouter API with Dolphin Mistral (uncensored)
  * Model: cognitivecomputations/dolphin-mistral-24b-venice-edition:free

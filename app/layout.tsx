@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import TopNav from '@/components/layout/TopNav';
-
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -19,7 +17,6 @@ export default function RootLayout({
         <html lang="fr" className="dark">
             <body className={`${inter.className} min-h-screen bg-background font-sans antialiased`}>
                 <div className="relative flex min-h-screen flex-col">
-                    <TopNav />
                     <main className="flex-1">
                         {children}
                     </main>
@@ -28,3 +25,4 @@ export default function RootLayout({
         </html>
     );
 }
+

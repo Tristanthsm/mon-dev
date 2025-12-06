@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Send, Loader, X } from 'lucide-react';
+import AIChatModeSelector, { AIMode } from '@/components/ai/AIChatModeSelector';
 
 interface Message {
     id: string;
@@ -18,12 +19,12 @@ const QUICK_SUGGESTIONS = [
 
 export default function AISidebar() {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedProvider, setSelectedProvider] = useState<'openrouter'>('openrouter');
+    const [selectedMode, setSelectedMode] = useState<AIMode>('general');
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
             role: 'assistant',
-            content: 'Salut ! 👋 Je suis ton assistant IA. Je peux t\'aider avec des questions sur le développement, les commandes Git, et bien plus !',
+            content: 'Salut ! 👋 Je suis ton assistant IA. Choisis un mode et pose-moi tes questions !',
             timestamp: new Date(),
         },
     ]);
@@ -71,41 +72,49 @@ export default function AISidebar() {
                 parts: [{ text: msg.content }],
             }));
 
-            // Use OpenRouter endpoint only
-            const endpoint = '/api/openrouter/chat';
+            // Use the unified AI endpoint with mode support
+            const endpoint = '/api/ai/chat';
 
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userMessage, history }),
+                body: JSON.stringify({
+                    message: userMessage,
+                    history,
+                    mode: selectedMode, // Pass the selected mode
+                    allowAdvancedAI: true // Default to true for this standalone version
+                }),
             });
 
             if (!response.ok || !response.body) {
-                const text = await response.text();
-                throw new Error(text || `OpenRouter error`);
-            }
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let done = false;
-
-            while (!done) {
-                const { value, done: doneReading } = await reader.read();
-                done = !!doneReading;
-                if (value) {
-                    const chunk = decoder.decode(value);
-                    setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: m.content + chunk } : m));
+                // Try to parse error message
+                let errorMsg = 'Unknown error';
+                try {
+                    const errorData = await response.json();
+                    errorMsg = errorData.error || errorMsg;
+                } catch (e) {
+                    const text = await response.text();
+                    errorMsg = text || errorMsg;
                 }
+                throw new Error(errorMsg);
             }
-            } catch (error) {
-                console.error('Error getting response:', error);
-                setMessages(prev => [...prev, {
-                    id: (Date.now() + 2).toString(),
-                    role: 'assistant',
-                    content: `Erreur avec OpenRouter: ${error instanceof Error ? error.message : 'Erreur inconnue'}. Veuillez vérifier votre clé API ou réessayer.`,
-                    timestamp: new Date(),
-                }]);
-            } finally {
+
+            // Handle streaming response if the API supports it, or JSON if not
+            // The current /api/ai/chat returns JSON, not a stream. 
+            // We'll adapt to handle the JSON response.
+            const data = await response.json();
+
+            setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: data.content } : m));
+
+        } catch (error) {
+            console.error('Error getting response:', error);
+            setMessages(prev => [...prev, {
+                id: (Date.now() + 2).toString(),
+                role: 'assistant',
+                content: `Erreur: ${error instanceof Error ? error.message : 'Erreur inconnue'}.`,
+                timestamp: new Date(),
+            }]);
+        } finally {
             setIsLoading(false);
         }
     };
@@ -118,7 +127,7 @@ export default function AISidebar() {
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed left-0 top-1/2 -translate-y-1/2 z-50 p-2 rounded-r-lg bg-gradient-to-r from-cyan-500 to-violet-500 text-white hover:from-cyan-600 hover:to-violet-600 transition-all"
+                className="fixed left-0 top-1/2 -translate-y-1/2 z-50 p-2 rounded-r-lg bg-gradient-to-r from-cyan-500 to-violet-500 text-white hover:from-cyan-600 hover:to-violet-600 transition-all shadow-lg shadow-cyan-500/20"
                 title="Ouvrir l'assistant IA"
             >
                 <ChevronRight size={24} />
@@ -145,17 +154,9 @@ export default function AISidebar() {
                 </button>
             </div>
 
-            {/* Model Info */}
-            <div className="p-4 border-b border-white/10 space-y-2">
-                <p className="text-xs text-slate-400 font-medium">Modèle : OpenRouter (par défaut)</p>
-                <div className="flex gap-2 mt-2">
-                    <button
-                        onClick={() => window.open('/ai', '_blank')}
-                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all bg-white/10 border border-white/20 text-slate-300 hover:bg-white/20`}
-                    >
-                        Ouvrir dans une fenêtre
-                    </button>
-                </div>
+            {/* Mode Selector */}
+            <div className="border-b border-white/10 bg-slate-900/50">
+                <AIChatModeSelector selectedMode={selectedMode} onSelectMode={setSelectedMode} />
             </div>
 
             {/* Messages Area */}
@@ -166,14 +167,13 @@ export default function AISidebar() {
                         className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                         <div
-                            className={`max-w-xs px-4 py-2 rounded-lg ${
-                                message.role === 'user'
-                                    ? 'bg-gradient-to-r from-cyan-500 to-violet-500 text-white'
-                                    : 'bg-white/10 border border-white/20 text-slate-100'
-                            }`}
+                            className={`max-w-[85%] px-4 py-2 rounded-2xl ${message.role === 'user'
+                                    ? 'bg-gradient-to-r from-cyan-500 to-violet-500 text-white rounded-br-none'
+                                    : 'bg-white/10 border border-white/20 text-slate-100 rounded-bl-none'
+                                }`}
                         >
-                            <p className="text-sm leading-relaxed break-words">{message.content}</p>
-                            <span className="text-xs opacity-60 mt-1 block">
+                            <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.content}</p>
+                            <span className="text-[10px] opacity-60 mt-1 block text-right">
                                 {message.timestamp.toLocaleTimeString('fr-FR', {
                                     hour: '2-digit',
                                     minute: '2-digit',
@@ -185,8 +185,12 @@ export default function AISidebar() {
 
                 {isLoading && (
                     <div className="flex gap-3 justify-start">
-                        <div className="bg-white/10 border border-white/20 rounded-lg px-4 py-2">
-                            <Loader size={20} className="animate-spin text-cyan-400" />
+                        <div className="bg-white/10 border border-white/20 rounded-2xl rounded-bl-none px-4 py-3">
+                            <div className="flex gap-1">
+                                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -203,9 +207,10 @@ export default function AISidebar() {
                             <button
                                 key={index}
                                 onClick={() => handleQuickSuggestion(suggestion.text)}
-                                className="w-full px-3 py-2 text-left text-sm rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-slate-300 transition-colors truncate"
+                                className="w-full px-3 py-2 text-left text-sm rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-slate-300 transition-colors truncate flex items-center gap-2"
                             >
-                                {suggestion.icon} {suggestion.text}
+                                <span>{suggestion.icon}</span>
+                                <span>{suggestion.text}</span>
                             </button>
                         ))}
                     </div>
@@ -213,7 +218,7 @@ export default function AISidebar() {
             )}
 
             {/* Input Area */}
-            <div className="p-4 border-t border-white/10 space-y-3">
+            <div className="p-4 border-t border-white/10 space-y-3 bg-slate-900/50">
                 <div className="flex gap-2">
                     <input
                         type="text"
@@ -225,13 +230,13 @@ export default function AISidebar() {
                             }
                         }}
                         placeholder="Demande quelque chose..."
-                        className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-colors text-sm"
+                        className="flex-1 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all text-sm"
                         disabled={isLoading}
                     />
                     <button
                         onClick={() => handleSendMessage()}
                         disabled={isLoading || !input.trim()}
-                        className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-violet-500 text-white hover:from-cyan-600 hover:to-violet-600 disabled:from-slate-600 disabled:to-slate-600 transition-all disabled:cursor-not-allowed flex items-center gap-2"
+                        className="px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 text-white hover:from-cyan-600 hover:to-violet-600 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-500 transition-all disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-cyan-500/20"
                     >
                         {isLoading ? (
                             <Loader size={18} className="animate-spin" />
@@ -240,9 +245,6 @@ export default function AISidebar() {
                         )}
                     </button>
                 </div>
-                <p className="text-xs text-slate-500 text-center">
-                    Appuyez sur Entrée pour envoyer
-                </p>
             </div>
         </div>
     );
