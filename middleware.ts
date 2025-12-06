@@ -29,9 +29,9 @@ export async function middleware(request: NextRequest) {
     const { data } = await supabase.auth.getUser()
     const pathname = request.nextUrl.pathname
 
-    // Si l'utilisateur est connecté et essaie d'accéder à login/signup, le rediriger vers le dashboard
-    if (data.user && (pathname === '/login' || pathname === '/signup')) {
-        return NextResponse.redirect(new URL('/dashboard', request.url))
+    // Rediriger l'ancien dashboard vers Growth
+    if (pathname === '/dashboard') {
+        return NextResponse.redirect(new URL('/growth', request.url))
     }
 
     return response

@@ -17,7 +17,7 @@ export default function HomePage() {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session) {
-                    router.push('/dashboard');
+                    router.push('/growth');
                 }
             } finally {
                 setIsLoading(false);
