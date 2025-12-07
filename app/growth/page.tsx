@@ -1,97 +1,61 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import { listAgents } from '@/lib/growth/dispatcher';
-import GrowthSidebar, { GrowthPlatform } from '@/components/growth/GrowthSidebar';
-import GrowthChatWindow from '@/components/growth/GrowthChatWindow';
-import GrowthSuggestions from '@/components/growth/GrowthSuggestions';
-import PlatformStats from '@/components/growth/PlatformStats';
+import React from 'react';
+import { Twitter, Youtube, Share2, MessageCircle, TrendingUp, Settings } from 'lucide-react';
 
-const suggestions = [
-    { title: 'Écris un thread 7 tweets sur notre nouveau SaaS', description: 'Hook + preuves + CTA demo', platform: 'Twitter' },
-    { title: 'Génère 10 hooks TikTok pour tester un MVP en 48h', description: 'Formats 6-15s', platform: 'TikTok' },
-    { title: 'Prépare un post Reddit value-first pour r/indiehackers', description: 'Story + apprentissage', platform: 'Reddit' },
-    { title: 'Plan LinkedIn 30 jours pour passer de 1k à 10k', description: 'Storytelling + carrousels', platform: 'LinkedIn' },
-    { title: 'Script YouTube Short 30s sur notre feature phare', description: 'Hook visuel + CTA soft', platform: 'YouTube' },
+const AGENTS = [
+    { title: 'Twitter / X', icon: Twitter, description: 'Génération de threads & hooks viraux.', status: 'Active' },
+    { title: 'Reddit', icon: Share2, description: 'Rédaction de posts value-first pour subreddits.', status: 'Ready' },
+    { title: 'YouTube', icon: Youtube, description: 'Scripting de Shorts & analyse de rétention.', status: 'Beta' },
+    { title: 'TikTok', icon: MessageCircle, description: 'Tendances & scripts vidéo dynamiques.', status: 'Coming Soon' },
+    { title: 'Cold Outreach', icon: TrendingUp, description: 'Automatisation de la prospection LinkedIn.', status: 'Planned' },
 ];
 
 export default function GrowthPage() {
-    const platforms: GrowthPlatform[] = useMemo(
-        () =>
-            listAgents().map((agent) => ({
-                id: agent.platform,
-                title: agent.title,
-                description: agent.description,
-            })),
-        []
-    );
-
-    const [active, setActive] = useState(platforms[0]?.id ?? 'twitter');
-    const [queuedPrompt, setQueuedPrompt] = useState<string | undefined>(undefined);
-
-    const handleSend = async ({ platform, message }: { platform: string; message: string }) => {
-        const res = await fetch('/api/growth', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ platform, message }),
-        });
-        if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            throw new Error(data.error || 'Erreur de l’agent');
-        }
-        const data = await res.json();
-        return data.content as string;
-    };
-
-    const activePlatform = platforms.find((p) => p.id === active) || platforms[0];
-
     return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
-            <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:px-6 lg:px-8 lg:grid-cols-[280px,1fr]">
-                <div className="lg:sticky lg:top-4 lg:self-start">
-                    {activePlatform && (
-                        <GrowthSidebar platforms={platforms} activeId={activePlatform.id} onSelect={setActive} />
-                    )}
-                </div>
+        <div className="p-6 md:p-8 max-w-7xl mx-auto">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-white mb-2">Growth Agents</h1>
+                <p className="text-slate-400">Déployez des agents spécialisés pour automatiser votre acquisition.</p>
+            </div>
 
-                <div className="flex flex-col gap-6">
-                    <div className="flex items-start justify-between gap-4">
-                        <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-200">Growth OS</p>
-                            <h1 className="text-3xl font-bold text-white">Agents IA par plateforme</h1>
-                            <p className="mt-2 max-w-2xl text-slate-400">
-                                Sélectionne une plateforme pour ouvrir son agent : contenu, hooks, scripts vidéo, planning, tendances, analyse concurrents.
-                                Compliance stricte : tout passe par APIs officielles + n8n, jamais par automatisation “web”.
-                            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {AGENTS.map((agent) => (
+                    <div key={agent.title} className="bg-slate-900/50 border border-white/5 rounded-2xl p-6 hover:border-cyan-500/30 transition-all group">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="p-3 bg-white/5 rounded-xl text-cyan-400 group-hover:bg-cyan-500/10 group-hover:text-cyan-300 transition-colors">
+                                <agent.icon size={24} />
+                            </div>
+                            <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider 
+                                ${agent.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400' :
+                                    agent.status === 'Beta' ? 'bg-amber-500/10 text-amber-400' : 'bg-slate-800 text-slate-500'}`}>
+                                {agent.status}
+                            </span>
                         </div>
-                        <div className="flex gap-2">
-                            <a
-                                href="/"
-                                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white hover:border-white/20"
-                            >
-                                ← Retour Accueil
-                            </a>
-                            <a
-                                href="/auth"
-                                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white hover:border-white/20"
-                            >
-                                Connexion
-                            </a>
+
+                        <h3 className="text-lg font-bold text-white mb-2">{agent.title}</h3>
+                        <p className="text-sm text-slate-400 leading-relaxed mb-6">
+                            {agent.description}
+                        </p>
+
+                        <div className="flex items-center gap-3 mt-auto">
+                            <button className="flex-1 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-medium text-white hover:bg-white/10 transition-colors">
+                                Ouvrir
+                            </button>
+                            <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+                                <Settings size={18} />
+                            </button>
                         </div>
                     </div>
+                ))}
 
-                    {activePlatform && (
-                        <GrowthChatWindow
-                            platform={activePlatform}
-                            onSend={handleSend}
-                            queuedMessage={queuedPrompt}
-                            onQueuedHandled={() => setQueuedPrompt(undefined)}
-                        />
-                    )}
-
-                    <GrowthSuggestions items={suggestions} onSelect={(text) => setQueuedPrompt(text)} />
-
-                    <PlatformStats />
+                {/* Add New Agent Placeholder */}
+                <div className="border border-dashed border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:border-white/20 hover:bg-white/5 transition-all cursor-pointer group">
+                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-slate-500 group-hover:bg-cyan-500/20 group-hover:text-cyan-400 mb-4 transition-colors">
+                        <span className="text-2xl font-light">+</span>
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-300">Nouvel Agent</h3>
+                    <p className="text-xs text-slate-500 mt-1">Configurer un custom bot</p>
                 </div>
             </div>
         </div>

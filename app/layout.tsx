@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import AppLayout from '@/components/layout/AppLayout';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -15,12 +16,10 @@ export default function RootLayout({
 }) {
     return (
         <html lang="fr" className="dark">
-            <body className={`${inter.className} min-h-screen bg-background font-sans antialiased`}>
-                <div className="relative flex min-h-screen flex-col">
-                    <main className="flex-1">
-                        {children}
-                    </main>
-                </div>
+            <body className={`${inter.className} bg-slate-950 font-sans antialiased overflow-hidden`}>
+                <AppLayout>
+                    {children}
+                </AppLayout>
             </body>
         </html>
     );

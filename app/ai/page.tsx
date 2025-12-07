@@ -1,9 +1,5 @@
-import AIWindow from '../../components/layout/AIWindow';
+import AgentChat from '@/components/ai/AgentChat';
 
-export const metadata = {
-  title: 'Assistant IA',
-};
-
-export default function AIPage() {
-  return <AIWindow />;
+export default function AgentPage() {
+    return <AgentChat />;
 }
