@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, Layers, TrendingUp, User, LayoutDashboard } from 'lucide-react';
+import { Bot, Layers, TrendingUp, User, LayoutDashboard, Search, Zap, Brain, MessageSquare } from 'lucide-react';
 import AuthStatus from '@/components/layout/AuthStatus';
 
 const TABS = [
     { name: 'Accueil', href: '/', icon: LayoutDashboard },
-    { name: 'Agent IA', href: '/ai', icon: Bot },
+    { name: 'Haaaariba', href: '/ai', icon: MessageSquare },
+    { name: 'Agents IA', href: '/agents', icon: Brain },
     { name: 'Notes', href: '/notes', icon: Layers },
-    { name: 'Growth', href: '/growth', icon: TrendingUp },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

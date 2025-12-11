@@ -11,7 +11,7 @@ export interface ChatRequest {
 
 export interface ChatResponse {
   content: string;
-  modelUsed: 'gpt-4' | 'dolphin-mistral';
+  modelUsed: string;
   isUncensored: boolean;
   tokensUsed?: {
     prompt: number;
@@ -24,7 +24,7 @@ export interface ChatLog {
   userId: string;
   message: string;
   response: string;
-  modelUsed: 'gpt-4' | 'dolphin-mistral';
+  modelUsed: string;
   isUncensored: boolean;
   createdAt: Date;
 }

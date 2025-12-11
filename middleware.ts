@@ -31,7 +31,7 @@ export async function middleware(request: NextRequest) {
 
     // Rediriger l'ancien dashboard vers Growth
     if (pathname === '/dashboard') {
-        return NextResponse.redirect(new URL('/growth', request.url))
+        return NextResponse.redirect(new URL('/agents', request.url))
     }
 
     return response

@@ -4,6 +4,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Loader, ChevronDown, Plus, Folder, MessageSquare, ChevronRight, Hash, MoreHorizontal, Settings2, Sparkles, FolderPlus, Edit2, Trash2, Box, BrainCircuit, Mic, Zap, X, Save, FileText, User as UserIcon, Bot } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { AIMode } from '@/components/ai/AIChatModeSelector';
+import { Database } from '@/types/supabase';
+
+type Session = Database['public']['Tables']['ai_sessions']['Row'];
+type Folder = Database['public']['Tables']['ai_folders']['Row'];
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -31,8 +35,8 @@ export default function AgentChat() {
     const [mounted, setMounted] = useState(false);
 
     // History & Folders State
-    const [folders, setFolders] = useState<any[]>([]);
-    const [sessions, setSessions] = useState<any[]>([]);
+    const [folders, setFolders] = useState<Folder[]>([]);
+    const [sessions, setSessions] = useState<Session[]>([]);
     const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
@@ -109,7 +113,7 @@ export default function AgentChat() {
         if (data) {
             // Transform DB messages to UI format
             const loadedMessages: Message[] = [];
-            data.forEach((row: any) => {
+            data.forEach((row) => {
                 // User message
                 loadedMessages.push({
                     id: row.id + '_user',
