@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         const { data: { user } } = await supabase.auth.getUser();
 
         const { data: savedBrief, error: dbError } = await supabase
-            .from('seo_briefs')
+            .from('seo_briefs' as any)
             .insert({
                 target_keyword: keyword,
                 status: 'generated',
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
         return NextResponse.json({
             success: true,
             brief,
-            id: savedBrief?.id
+            id: (savedBrief as any)?.id
         });
 
     } catch (error: any) {

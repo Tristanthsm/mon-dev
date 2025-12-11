@@ -34,7 +34,7 @@ export async function POST(req: Request) {
         };
 
         const { data: savedAudit, error: dbError } = await supabase
-            .from('seo_audits')
+            .from('seo_audits' as any)
             .insert({
                 url: url,
                 score: auditResult.score,
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
         return NextResponse.json({
             success: true,
             audit: fullReport,
-            id: savedAudit?.id
+            id: (savedAudit as any)?.id
         });
 
     } catch (error: any) {

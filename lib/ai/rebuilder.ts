@@ -1,4 +1,4 @@
-import { getAgent } from '@/lib/agents/orchestrator';
+
 import { ScrapedData } from '@/lib/rebuilder/scraper';
 
 export interface WebsiteAnalysis {
@@ -75,6 +75,12 @@ export async function analyzeWebsiteStructure(data: ScrapedData): Promise<Websit
         });
 
         const json = await response.json();
+
+        if (!json.choices || !json.choices[0] || !json.choices[0].message) {
+            console.error("OpenRouter API Error - Invalid Response:", JSON.stringify(json, null, 2));
+            throw new Error(`OpenRouter API Error: ${json.error?.message || 'Unknown error'}`);
+        }
+
         const content = json.choices[0].message.content;
         return JSON.parse(content);
 
@@ -127,6 +133,12 @@ export async function generateReactCode(analysis: WebsiteAnalysis): Promise<stri
         });
 
         const json = await response.json();
+
+        if (!json.choices || !json.choices[0] || !json.choices[0].message) {
+            console.error("OpenRouter API Gen Error - Invalid Response:", JSON.stringify(json, null, 2));
+            throw new Error(`OpenRouter API Gen Error: ${json.error?.message || 'Unknown error'}`);
+        }
+
         let code = json.choices[0].message.content;
 
         // Clean up markdown if present

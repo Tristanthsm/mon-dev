@@ -68,7 +68,13 @@ export async function generateAuditSummary(auditData: SeoAuditData, issues: SeoI
         }
 
         const data = await response.json();
-        const content = data.choices[0]?.message?.content;
+
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            console.error('AI SEO Summary - Invalid API Response:', JSON.stringify(data, null, 2));
+            throw new Error(`OpenRouter API Error: ${data.error?.message || 'Unknown error'}`);
+        }
+
+        const content = data.choices[0].message.content;
 
         if (!content) throw new Error('No content from AI');
 

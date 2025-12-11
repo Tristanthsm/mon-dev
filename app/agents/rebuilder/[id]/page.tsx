@@ -67,7 +67,7 @@ export default function RebuilderResultPage() {
         const fetchProject = async () => {
             const supabase = createClient();
             const { data, error } = await supabase
-                .from('rebuild_projects')
+                .from('rebuild_projects' as any)
                 .select('*')
                 .eq('id', id)
                 .single();

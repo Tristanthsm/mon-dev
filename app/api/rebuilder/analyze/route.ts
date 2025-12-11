@@ -32,7 +32,7 @@ export async function POST(req: Request) {
         const { data: { user } } = await supabase.auth.getUser();
 
         const { data: project, error: dbError } = await supabase
-            .from('rebuild_projects')
+            .from('rebuild_projects' as any)
             .insert({
                 target_url: url,
                 user_id: user?.id,
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             success: true,
-            projectId: project.id,
+            projectId: (project as any).id,
             analysis,
             code: generatedCode
         });

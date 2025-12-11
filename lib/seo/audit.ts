@@ -3,7 +3,7 @@ import * as cheerio from 'cheerio';
 export interface SeoIssue {
     id: string;
     severity: 'high' | 'medium' | 'low' | 'info';
-    category: 'technical' | 'content' | 'performance' | 'mobile';
+    category: 'technical' | 'content' | 'performance' | 'mobile' | 'accessibility';
     title: string;
     description: string;
     recommendation: string;

@@ -32,7 +32,7 @@ export async function GET(req: Request) {
                 trend_type: categoryId ? `category_${categoryId}` : 'general'
             }));
 
-            const { error } = await supabase.from('youtube_trends').upsert(records, { onConflict: 'video_id', ignoreDuplicates: true }); // Ideally we want to track snapshots over time, but for now simple upsert or insert-only. 
+            const { error } = await supabase.from('youtube_trends' as any).upsert(records, { onConflict: 'video_id', ignoreDuplicates: true }); // Ideally we want to track snapshots over time, but for now simple upsert or insert-only. 
             // If we want snapshots, we shouldn't use video_id as unique primary key, or use a separate snapshots table.
             // Given the schema: id is uuid, video_id is text. Upsert on id? No.
             // Let's just insert new records for "history" or update existing ones?

@@ -113,3 +113,10 @@ export async function analyzeNicheOpportunity(keyword: string, topVideos: { titl
 
     return await callAI(system, prompt);
 }
+
+export async function analyzeYouTubeTrends(videos: any[]) {
+    // Wrapper for analyzing a list of videos as a "trend"
+    // We treat the "Trend" as a Niche analysis of the current popular videos
+    const simplified = videos.map(v => ({ title: v.title, views: v.views }));
+    return analyzeNicheOpportunity("Trending Now", simplified);
+}
